@@ -3,6 +3,7 @@ package com.example.testtaskconsumer2.consumer;
 
 import com.example.testtaskconsumer2.EnrichedStringsService;
 import com.example.testtaskconsumer2.dto.StringDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,10 +17,18 @@ import org.springframework.validation.annotation.Validated;
 public class StringListener {
 
     private final EnrichedStringsService enrichedStringsService;
+    private final ObjectMapper om = new ObjectMapper();
 
-    @KafkaListener(topics = "${kafka-topic.strings-under-100}", groupId = "1")
-    public void entitiesDiffListener(@Payload @Validated StringDto stringDto) {
-        log.debug("Received string: {}", stringDto);
+    @KafkaListener(topics = "${kafka-topic.strings-under-100}", groupId = "Some group")
+    public void entitiesDiffListener(String enrichedString) {
+        log.debug("Received string: {}", enrichedString);
+        StringDto stringDto = null;
+        try {
+            stringDto = om.readValue(enrichedString, StringDto.class);
+        } catch (Exception e){
+            log.error("Error wile parsing msg: {}", enrichedString);
+            throw new RuntimeException("Error wile parsing msg: " + enrichedString);
+        }
         var result = enrichedStringsService.saveEnrichedString(stringDto.getWord());
         log.debug("String saved: {}", result);
     }
