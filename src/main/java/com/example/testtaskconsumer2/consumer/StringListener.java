@@ -17,18 +17,10 @@ import org.springframework.validation.annotation.Validated;
 public class StringListener {
 
     private final EnrichedStringsService enrichedStringsService;
-    private final ObjectMapper om = new ObjectMapper();
 
     @KafkaListener(topics = "${kafka-topic.strings-under-100}", groupId = "Some group")
-    public void entitiesDiffListener(String enrichedString) {
-        log.debug("Received string: {}", enrichedString);
-        StringDto stringDto = null;
-        try {
-            stringDto = om.readValue(enrichedString, StringDto.class);
-        } catch (Exception e){
-            log.error("Error wile parsing msg: {}", enrichedString);
-            throw new RuntimeException("Error wile parsing msg: " + enrichedString);
-        }
+    public void entitiesDiffListener(StringDto stringDto) {
+        log.debug("Received string: {}", stringDto);
         var result = enrichedStringsService.saveEnrichedString(stringDto.getWord());
         log.debug("String saved: {}", result);
     }

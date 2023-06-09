@@ -1,4 +1,4 @@
-package com.example.sbahistory.config;
+package com.example.testtaskconsumer2.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
