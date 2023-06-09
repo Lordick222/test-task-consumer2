@@ -18,7 +18,7 @@ public class StringListener {
 
     private final EnrichedStringsService enrichedStringsService;
 
-    @KafkaListener(topics = "${kafka-topic.strings-under-100}", groupId = "Some group")
+    @KafkaListener(topics = "${kafka-topic.strings-under-100}", groupId = "Some_group")
     public void entitiesDiffListener(StringDto stringDto) {
         log.debug("Received string: {}", stringDto);
         var result = enrichedStringsService.saveEnrichedString(stringDto.getWord());
